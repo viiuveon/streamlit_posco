@@ -1,6 +1,6 @@
 # OpenAI Streamlit 챗봇
 
-`gpt-4o-mini`와 OpenAI Responses API를 사용하는 간단한 Streamlit 챗봇입니다. 답변은 스트리밍으로 표시되며, 현재 대화는 브라우저 세션 동안 유지됩니다.
+`gpt-4o-mini`와 OpenAI Responses API를 사용하는 Streamlit 챗봇입니다. 답변은 스트리밍으로 표시되며, 메모와 달력 탭도 포함합니다. 메모는 현재 브라우저 세션에 저장되며 텍스트 파일로 다운로드할 수 있습니다.
 
 ## 로컬 실행
 
