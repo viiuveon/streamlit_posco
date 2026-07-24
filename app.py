@@ -33,23 +33,33 @@ def response_stream(client: OpenAI, messages: list[dict[str, str]]):
             yield event.delta
 
 
-def render_calendar(selected_date: date) -> None:
-    """선택된 날짜의 월간 달력을 Markdown 표로 표시한다."""
-    month = calendar.Calendar(firstweekday=0).monthdayscalendar(
-        selected_date.year, selected_date.month
-    )
-    rows = ["| 월 | 화 | 수 | 목 | 금 | 토 | 일 |", "| --- | --- | --- | --- | --- | --- | --- |"]
-    for week in month:
+def calendar_html(today: date) -> str:
+    """오늘을 빨간 원으로 강조한 작은 월간 달력 HTML을 만든다."""
+    weeks = calendar.Calendar(firstweekday=0).monthdayscalendar(today.year, today.month)
+    rows = []
+    for week in weeks:
         cells = []
         for day in week:
-            if day == 0:
-                cells.append("")
-            elif day == selected_date.day:
-                cells.append(f"**{day}**")
-            else:
-                cells.append(str(day))
-        rows.append("| " + " | ".join(cells) + " |")
-    st.markdown("\n".join(rows))
+            content = "" if day == 0 else str(day)
+            style = " today" if day == today.day else ""
+            cells.append(f'<td><span class="calendar-day{style}">{content}</span></td>')
+        rows.append("<tr>" + "".join(cells) + "</tr>")
+
+    return f"""
+    <style>
+      .mini-calendar {{ width: 100%; border-collapse: collapse; text-align: center; font-size: 0.78rem; }}
+      .mini-calendar th {{ color: #6b7280; font-weight: 600; padding: 0.18rem 0; }}
+      .mini-calendar td {{ height: 1.7rem; }}
+      .calendar-day {{ display: inline-flex; width: 1.55rem; height: 1.55rem; align-items: center;
+        justify-content: center; border-radius: 50%; }}
+      .calendar-day.today {{ background: #e53935; color: white; font-weight: 700; }}
+    </style>
+    <div style="text-align:center; font-weight:600; margin:0.2rem 0 0.35rem;">{today:%Y년 %m월}</div>
+    <table class="mini-calendar">
+      <thead><tr><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th><th>일</th></tr></thead>
+      <tbody>{''.join(rows)}</tbody>
+    </table>
+    """
 
 
 st.set_page_config(page_title="OpenAI 챗봇", page_icon="💬")
@@ -68,8 +78,11 @@ with st.sidebar:
     if st.button("새 대화", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
+    st.divider()
+    st.subheader("📅 달력")
+    st.markdown(calendar_html(date.today()), unsafe_allow_html=True)
 
-chat_tab, memo_tab, calendar_tab = st.tabs(["💬 챗봇", "📝 메모", "📅 달력"])
+chat_tab, memo_tab = st.tabs(["💬 챗봇", "📝 메모"])
 
 with chat_tab:
     for message in st.session_state.messages:
@@ -113,9 +126,3 @@ with memo_tab:
             use_container_width=True,
             disabled=not st.session_state.saved_memo,
         )
-
-with calendar_tab:
-    st.subheader("달력")
-    selected_date = st.date_input("날짜 선택", value=date.today())
-    st.write(f"선택한 날짜: **{selected_date:%Y년 %m월 %d일}**")
-    render_calendar(selected_date)
