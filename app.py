@@ -47,11 +47,13 @@ def calendar_html(today: date) -> str:
 
     return f"""
     <style>
-      .mini-calendar {{ width: 100%; border-collapse: collapse; text-align: center; font-size: 0.78rem; }}
-      .mini-calendar th {{ color: #6b7280; font-weight: 600; padding: 0.18rem 0; }}
-      .mini-calendar td {{ height: 1.7rem; }}
-      .calendar-day {{ display: inline-flex; width: 1.55rem; height: 1.55rem; align-items: center;
-        justify-content: center; border-radius: 50%; }}
+      .mini-calendar {{ width: 100%; max-width: 15rem; margin: 0 auto; border: 0 !important;
+        border-collapse: collapse; table-layout: fixed; text-align: center; font-size: 0.72rem; }}
+      .mini-calendar th, .mini-calendar td {{ border: 0 !important; padding: 0 !important; }}
+      .mini-calendar th {{ color: #6b7280; font-weight: 600; height: 1.35rem; }}
+      .mini-calendar td {{ height: 1.45rem; }}
+      .calendar-day {{ display: inline-flex; width: 1.35rem; height: 1.35rem; align-items: center;
+        justify-content: center; border: 0 !important; border-radius: 50%; }}
       .calendar-day.today {{ background: #e53935; color: white; font-weight: 700; }}
     </style>
     <div style="text-align:center; font-weight:600; margin:0.2rem 0 0.35rem;">{today:%Y년 %m월}</div>
